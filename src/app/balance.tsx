@@ -5,10 +5,17 @@ import getBalances from './utils/getBalances';
 import { ethers } from 'ethers';
 import { provider } from './utils/providers';
 import Erc20ABI from './abis/Erc20.abi.json';
+import {
+  BSC_CONTRACT_ADDRESS,
+  BSC_RPC_URL,
+  ETH_CONTRACT_ADDRESS,
+  ETH_RPC_URL,
+} from './utils/common';
 
 const Balance = () => {
   const [addresses, setAddresses] = useState<string[]>([]);
   const [assets, setAssets] = useState<string[]>([]);
+  const [network, setNetwork] = useState<string>('eth');
   const [assetNames, setAssetNames] = useState<string[]>([]);
   const [balances, setBalances] = useState<any>({});
   const [loading, setLoading] = useState<boolean>(false);
@@ -18,14 +25,23 @@ const Balance = () => {
       setLoading(true);
       e.preventDefault();
 
-      const balances = await getBalances(addresses, assets);
+      const rpcUrl = network === 'eth' ? ETH_RPC_URL : BSC_RPC_URL;
+      const contractAddress =
+        network === 'eth' ? ETH_CONTRACT_ADDRESS : BSC_CONTRACT_ADDRESS;
+
+      const balances = await getBalances(
+        rpcUrl,
+        contractAddress,
+        addresses,
+        assets
+      );
 
       // Get asset names
       const assetNames = await Promise.all(
         assets.map(async (asset) => {
           if (asset === ethers.ZeroAddress) return 'ETH (18)';
 
-          const token = new ethers.Contract(asset, Erc20ABI, provider);
+          const token = new ethers.Contract(asset, Erc20ABI, provider(rpcUrl));
 
           const symbol =
             (await token.symbol()) || (await await token._symbol());
@@ -55,14 +71,19 @@ const Balance = () => {
   };
   return (
     <>
-      <h1 className="text-3xl font-bold text-center">
-        Ethereum Bulk Balance Checker
-      </h1>
+      <h1 className="text-3xl font-bold text-center">Bulk Balance Checker</h1>
       <div className="bg-gray-100 p-6 mt-3 w-full">
         <form
           className="flex flex-col items-center justify-center"
           onSubmit={handleOnSubmit}
         >
+          <select
+            className="appearance-none border rounded w-full px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-3 py-4"
+            onChange={(e) => setNetwork(e.target.value)}
+          >
+            <option value="eth">Ethereum (ETH)</option>
+            <option value="bsc">BNB Smart Chain (BSC)</option>
+          </select>
           <textarea
             required={true}
             className="appearance-none border rounded w-full px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-3 py-4"
