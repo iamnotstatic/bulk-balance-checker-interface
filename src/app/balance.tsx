@@ -45,12 +45,12 @@ const Balance = () => {
   };
 
   const onSetAssets = (assets: string[]) => {
-    setAssets([]);
+    setBalances({});
     setAssets(assets);
   };
 
   const onSetAddresses = (addresses: string[]) => {
-    setAddresses([]);
+    setBalances({});
     setAddresses(addresses);
   };
   return (
@@ -101,42 +101,49 @@ const Balance = () => {
         </div>
       )}
 
-      {!loading && Object.keys(balances).length > 0 && (
-        <div className="bg-gray-100 p-6 mt-3 w-full text-center">
-          <h1 className="text-xl font-extralight text-center mb-3">Results</h1>
-          <table className="table-auto w-full">
-            <thead>
-              <tr>
-                <th className="px-4 py-2">Address</th>
-                {assetNames.map((asset, i) => (
-                  <th className="px-4 py-2" key={i}>
-                    {asset}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {Object.keys(balances).map((address, i) => (
-                <tr key={i}>
-                  <td className="border px-4 py-2">
-                    {address.slice(0, 6)} ... {address.slice(-5)}
-                  </td>
-                  {assets.map((asset, i) => (
-                    <td className="border px-4 py-2" key={i}>
-                      {parseFloat(
-                        ethers.formatUnits(
-                          balances[address][asset],
-                          parseFloat(assetNames[i].split('(')[1].split(')')[0])
-                        )
-                      ).toLocaleString('en-US')}
-                    </td>
+      {!loading &&
+        Object.keys(balances).length > 0 &&
+        addresses.length > 0 &&
+        assets.length > 0 && (
+          <div className="bg-gray-100 p-6 mt-3 w-full text-center">
+            <h1 className="text-xl font-extralight text-center mb-3">
+              Results
+            </h1>
+            <table className="table-auto w-full">
+              <thead>
+                <tr>
+                  <th className="px-4 py-2">Address</th>
+                  {assetNames.map((asset, i) => (
+                    <th className="px-4 py-2" key={i}>
+                      {asset}
+                    </th>
                   ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+              </thead>
+              <tbody>
+                {Object.keys(balances).map((address, i) => (
+                  <tr key={i}>
+                    <td className="border px-4 py-2">
+                      {address.slice(0, 6)} ... {address.slice(-5)}
+                    </td>
+                    {assets.map((asset, i) => (
+                      <td className="border px-4 py-2" key={i}>
+                        {parseFloat(
+                          ethers?.formatUnits(
+                            balances[address][asset],
+                            parseFloat(
+                              assetNames[i]?.split('(')[1]?.split(')')[0]
+                            )
+                          )
+                        ).toLocaleString('en-US')}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
     </>
   );
 };
