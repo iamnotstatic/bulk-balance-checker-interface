@@ -4,8 +4,8 @@ import { Inter } from 'next/font/google';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
-  title: 'Ethereum Bulk balance Checker',
-  description: 'Check the balance of multiple ethereum addresses at once',
+  title: 'Blockchain Bulk balance Checker',
+  description: 'Check the balance of multiple blockchain addresses at once',
 };
 
 export default function RootLayout({
