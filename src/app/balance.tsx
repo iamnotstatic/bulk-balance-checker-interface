@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import getBalances from './utils/getBalances';
 import { ethers } from 'ethers';
-import { ethers as provider } from './utils/providers';
+import { provider } from './utils/providers';
+import Erc20ABI from './abis/Erc20.abi.json';
 
 const Balance = () => {
   const [addresses, setAddresses] = useState<string[]>([]);
@@ -24,17 +25,10 @@ const Balance = () => {
         assets.map(async (asset) => {
           if (asset === ethers.ZeroAddress) return 'ETH (18)';
 
-          const token = new ethers.Contract(
-            asset,
-            [
-              'function name() view returns (string)',
-              'function symbol() view returns (string)',
-              'function decimals() view returns (uint8)',
-            ],
-            provider
-          );
+          const token = new ethers.Contract(asset, Erc20ABI, provider);
 
-          const symbol = await token.symbol();
+          const symbol =
+            (await token.symbol()) || (await await token._symbol());
           const decimals = await token.decimals();
 
           return `${symbol} (${decimals})`;
