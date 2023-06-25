@@ -39,7 +39,8 @@ const Balance = () => {
       // Get asset names
       const assetNames = await Promise.all(
         assets.map(async (asset) => {
-          if (asset === ethers.ZeroAddress) return 'ETH (18)';
+          if (asset === ethers.ZeroAddress)
+            return network === 'eth' ? 'ETH (18)' : 'BNB (18)';
 
           const token = new ethers.Contract(asset, Erc20ABI, provider(rpcUrl));
 
