@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import getBalances from './utils/getBalances';
 import { ethers } from 'ethers';
 import { provider } from './utils/providers';
@@ -10,7 +11,9 @@ import {
   BSC_RPC_URL,
   ETH_CONTRACT_ADDRESS,
   ETH_RPC_URL,
+  getAssets,
 } from './utils/common';
+import { CSVLink, CSVDownload } from 'react-csv';
 
 const Balance = () => {
   const [addresses, setAddresses] = useState<string[]>([]);
@@ -19,6 +22,7 @@ const Balance = () => {
   const [assetNames, setAssetNames] = useState<string[]>([]);
   const [balances, setBalances] = useState<any>({});
   const [loading, setLoading] = useState<boolean>(false);
+  const [isActiveIndexes, setIsActiveIndexes] = useState<number[]>([]);
 
   const handleOnSubmit = async (e: any) => {
     try {
@@ -85,6 +89,38 @@ const Balance = () => {
             <option value="eth">Ethereum (ETH)</option>
             <option value="bsc">BNB Smart Chain (BSC)</option>
           </select>
+          <div
+            className={`flex text-center max-w-full gap-6 mt-3 mb-3 overflow-scroll`}
+          >
+            {getAssets(network).map((asset, index) => (
+              <div
+                key={index}
+                className="text-center"
+                onClick={() => {
+                  setIsActiveIndexes([...isActiveIndexes, index]);
+                  onSetAssets([...assets, asset.address]);
+                }}
+              >
+                <div
+                  className={`w-20 ${
+                    isActiveIndexes.includes(index)
+                      ? 'bg-gray-400'
+                      : 'bg-gray-200'
+                  } p-2 rounded-lg cursor-pointer hover:bg-gray-400 text-center`}
+                >
+                  <Image
+                    src={asset.logo}
+                    alt="Asset logo"
+                    className="w-8 mx-auto"
+                    width={0}
+                    height={0}
+                  />
+                  <p className="text-xs mt-2 font-bold">{asset.symbol}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
           <textarea
             required={true}
             className="appearance-none border rounded w-full px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-3 py-4"
@@ -94,6 +130,7 @@ const Balance = () => {
             }
             placeholder="Token addresses 0x1234... 0x5678..."
             name="assets"
+            value={assets.join(' ')}
           ></textarea>
           <textarea
             required={true}
@@ -131,6 +168,30 @@ const Balance = () => {
             <h1 className="text-xl font-extralight text-center mb-3">
               Results
             </h1>
+            <CSVLink
+              data={[
+                ['Address', ...assetNames],
+                ...Object.keys(balances).map((address) => [
+                  address,
+                  ...assets.map((asset) =>
+                    parseFloat(
+                      ethers?.formatUnits(
+                        balances[address][asset],
+                        parseFloat(
+                          assetNames[assets.indexOf(asset)]
+                            ?.split('(')[1]
+                            ?.split(')')[0]
+                        )
+                      )
+                    ).toLocaleString('en-US')
+                  ),
+                ]),
+              ]}
+              filename={'balances.csv'}
+              className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-6 rounded focus:outline-none focus:shadow-outline mt-2 mb-5 cursor-pointer float-right"
+            >
+              Export CSV
+            </CSVLink>
             <table className="table-auto w-full">
               <thead>
                 <tr>
