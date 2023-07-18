@@ -1,3 +1,5 @@
+import { ethDefaultAssets, bscDefaultAssets } from '../constants';
+
 export interface Options {
   contractAddress?: string;
 }
@@ -34,3 +36,13 @@ export function formatAddressBalances<T extends { toString: () => string }>(
   });
   return balances;
 }
+
+export const getAssets = (network: string) => {
+  if (network === 'eth') {
+    return ethDefaultAssets;
+  } else if (network === 'bsc') {
+    return bscDefaultAssets;
+  } else {
+    return [];
+  }
+};
