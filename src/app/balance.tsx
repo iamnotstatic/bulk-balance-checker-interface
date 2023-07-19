@@ -6,14 +6,8 @@ import getBalances from './utils/getBalances';
 import { ethers } from 'ethers';
 import { provider } from './utils/providers';
 import Erc20ABI from './abis/Erc20.abi.json';
-import {
-  BSC_CONTRACT_ADDRESS,
-  BSC_RPC_URL,
-  ETH_CONTRACT_ADDRESS,
-  ETH_RPC_URL,
-  getAssets,
-} from './utils/common';
-import { CSVLink, CSVDownload } from 'react-csv';
+import { getAssets, getContractAddressAndRpcUrl } from './utils/common';
+import { CSVLink } from 'react-csv';
 
 const Balance = () => {
   const [addresses, setAddresses] = useState<string[]>([]);
@@ -29,9 +23,7 @@ const Balance = () => {
       setLoading(true);
       e.preventDefault();
 
-      const rpcUrl = network === 'eth' ? ETH_RPC_URL : BSC_RPC_URL;
-      const contractAddress =
-        network === 'eth' ? ETH_CONTRACT_ADDRESS : BSC_CONTRACT_ADDRESS;
+      const { contractAddress, rpcUrl } = getContractAddressAndRpcUrl(network);
 
       const balances = await getBalances(
         rpcUrl,
@@ -44,7 +36,15 @@ const Balance = () => {
       const assetNames = await Promise.all(
         assets.map(async (asset) => {
           if (asset === ethers.ZeroAddress)
-            return network === 'eth' ? 'ETH (18)' : 'BNB (18)';
+            return network === 'eth'
+              ? 'ETH (18)'
+              : network === 'bsc'
+              ? 'BNB (18)'
+              : network === 'polygon'
+              ? 'MATIC (18)'
+              : network === 'arbitrum'
+              ? 'ARB (18)'
+              : '';
 
           const token = new ethers.Contract(asset, Erc20ABI, provider(rpcUrl));
 
@@ -74,6 +74,14 @@ const Balance = () => {
     setBalances({});
     setAddresses(addresses);
   };
+
+  const onSetNetwork = (network: string) => {
+    setBalances({});
+    setAssets([]);
+    setIsActiveIndexes([]);
+    setNetwork(network);
+  };
+
   return (
     <>
       <h1 className="text-3xl font-bold text-center">Bulk Balance Checker</h1>
@@ -84,10 +92,12 @@ const Balance = () => {
         >
           <select
             className="appearance-none border rounded w-full px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-3 py-4"
-            onChange={(e) => setNetwork(e.target.value)}
+            onChange={(e) => onSetNetwork(e.target.value)}
           >
             <option value="eth">Ethereum (ETH)</option>
             <option value="bsc">BNB Smart Chain (BSC)</option>
+            <option value="polygon">Polygon (MATIC)</option>
+            <option value="arbitrum">Arbitrum (ARB)</option>
           </select>
           <div
             className={`flex text-center max-w-full gap-6 mt-3 mb-3 overflow-scroll`}
