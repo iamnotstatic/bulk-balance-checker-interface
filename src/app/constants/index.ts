@@ -1,5 +1,3 @@
-import ethers from 'ethers';
-
 export type Asset = {
   address: string;
   symbol: string;
@@ -69,5 +67,56 @@ export const bscDefaultAssets: Asset[] = [
     address: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
     symbol: 'BUSD',
     logo: 'https://cryptologos.cc/logos/binance-usd-busd-logo.png?v=014',
+  },
+];
+
+export const polygonDefaultAssets: Asset[] = [
+  {
+    symbol: 'MATIC',
+    logo: 'https://cryptologos.cc/logos/polygon-matic-logo.png?v=014',
+    address: '0x0000000000000000000000000000000000000000',
+  },
+  {
+    symbol: 'USDT',
+    logo: 'https://cryptologos.cc/logos/tether-usdt-logo.png?v=014',
+    address: '0xc2132D05D31c914a87C6611C10748AEb04B58e8F',
+  },
+  {
+    symbol: 'USDC',
+    address: '0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174',
+    logo: 'https://cryptologos.cc/logos/usd-coin-usdc-logo.png?v=014',
+  },
+  {
+    symbol: 'DAI',
+    address: '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063',
+    logo: 'https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png?v=014',
+  },
+  {
+    symbol: 'BUSD',
+    address: '0x9C9e5fD8bbc25984B178FdCE6117Defa39d2db39',
+    logo: 'https://cryptologos.cc/logos/binance-usd-busd-logo.png?v=014',
+  },
+];
+
+export const arbitrumDefaultAssets: Asset[] = [
+  {
+    symbol: 'ARB',
+    logo: 'https://cryptologos.cc/logos/arbitrum-arb-logo.png?v=014',
+    address: '0x0000000000000000000000000000000000000000',
+  },
+  {
+    symbol: 'USDT',
+    logo: 'https://cryptologos.cc/logos/tether-usdt-logo.png?v=014',
+    address: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9',
+  },
+  {
+    symbol: 'USDC',
+    address: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831',
+    logo: 'https://cryptologos.cc/logos/usd-coin-usdc-logo.png?v=014',
+  },
+  {
+    symbol: 'DAI',
+    address: '0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1',
+    logo: 'https://cryptologos.cc/logos/multi-collateral-dai-dai-logo.png?v=014',
   },
 ];
