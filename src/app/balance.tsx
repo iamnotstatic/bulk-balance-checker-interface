@@ -8,6 +8,8 @@ import { provider } from './utils/providers';
 import Erc20ABI from './abis/Erc20.abi.json';
 import { getAssets, getContractAddressAndRpcUrl } from './utils/common';
 import { CSVLink } from 'react-csv';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTwitter, faGithub } from '@fortawesome/free-brands-svg-icons';
 
 const Balance = () => {
   const [addresses, setAddresses] = useState<string[]>([]);
@@ -84,14 +86,37 @@ const Balance = () => {
 
   return (
     <>
-      <h1 className="text-3xl font-bold text-center">Bulk Balance Checker</h1>
+      <div>
+        <h1 className="text-3xl font-bold text-center">Bulk Balance Checker</h1>
+        <p className="text-center mt-2">
+          Discover the Collective Balance of Multiple Addresses and Assets
+          Instantly!
+        </p>
+        <div className="flex flex-row justify-center mt-5">
+          <a
+            href="https://twitter.com/iamnotstatic"
+            target="_blank"
+            className="mr-5 hover:text-blue-500"
+          >
+            <FontAwesomeIcon icon={faTwitter} size="2x" />
+          </a>
+          <a
+            href="https://github.com/iamnotstatic/bulk-balance-checker-interface"
+            target="_blank"
+            className="hover:text-blue-500"
+          >
+            <FontAwesomeIcon icon={faGithub} size="2x" />
+          </a>
+        </div>
+      </div>
+
       <div className="bg-gray-100 p-6 mt-3 w-full">
         <form
           className="flex flex-col items-center justify-center"
           onSubmit={handleOnSubmit}
         >
           <select
-            className="appearance-none border rounded w-full px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-3 py-4"
+            className="border rounded w-full px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-3 py-4"
             onChange={(e) => onSetNetwork(e.target.value)}
           >
             <option value="eth">Ethereum (ETH)</option>
