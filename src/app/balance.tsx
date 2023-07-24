@@ -69,11 +69,15 @@ const Balance = () => {
 
   const onSetAssets = (assets: string[]) => {
     setBalances({});
+
+    assets = [...new Set(assets)];
     setAssets(assets);
   };
 
   const onSetAddresses = (addresses: string[]) => {
     setBalances({});
+
+    addresses = [...new Set(addresses)];
     setAddresses(addresses);
   };
 
@@ -132,6 +136,14 @@ const Balance = () => {
                 key={index}
                 className="text-center"
                 onClick={() => {
+                  if (isActiveIndexes.includes(index)) {
+                    setIsActiveIndexes(
+                      isActiveIndexes.filter((i) => i !== index)
+                    );
+                    onSetAssets(assets.filter((a) => a !== asset.address));
+                    return;
+                  }
+
                   setIsActiveIndexes([...isActiveIndexes, index]);
                   onSetAssets([...assets, asset.address]);
                 }}
@@ -227,7 +239,7 @@ const Balance = () => {
             >
               Export CSV
             </CSVLink>
-            <table className="table-auto w-full">
+            <table className="table-fixed w-full">
               <thead>
                 <tr>
                   <th className="px-4 py-2">Address</th>
