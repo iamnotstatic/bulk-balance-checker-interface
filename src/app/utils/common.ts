@@ -1,3 +1,4 @@
+import { ethers } from 'ethers';
 import {
   ethDefaultAssets,
   bscDefaultAssets,
@@ -48,6 +49,25 @@ export function formatAddressBalances<T extends { toString: () => string }>(
   return balances;
 }
 
+export function getAddressBalances<T extends { toString: () => string }>(
+  values: T[],
+  addresses: string[],
+  assets: Array<{ symbol: string; decimals: number }>
+) {
+  const balances: AddressBalanceMap = {};
+  addresses.forEach((addr, addrIdx) => {
+    balances[addr] = {};
+    assets.forEach((asset, assetIdx) => {
+      const balance = ethers.formatUnits(
+        values[addrIdx * assets.length + assetIdx].toString(),
+        asset.decimals
+      );
+      balances[addr][asset.symbol] = balance.toString();
+    });
+  });
+  return balances;
+}
+
 export const getAssets = (network: string) => {
   if (network === 'eth') {
     return ethDefaultAssets;
@@ -59,6 +79,20 @@ export const getAssets = (network: string) => {
     return arbitrumDefaultAssets;
   } else {
     return [];
+  }
+};
+
+export const getAsset = (network: string, symbol: string) => {
+  if (network === 'eth') {
+    return ethDefaultAssets.find((asset) => asset.symbol === symbol);
+  } else if (network === 'bsc') {
+    return bscDefaultAssets.find((asset) => asset.symbol === symbol);
+  } else if (network === 'polygon') {
+    return polygonDefaultAssets.find((asset) => asset.symbol === symbol);
+  } else if (network === 'arbitrum') {
+    return arbitrumDefaultAssets.find((asset) => asset.symbol === symbol);
+  } else {
+    return null;
   }
 };
 
