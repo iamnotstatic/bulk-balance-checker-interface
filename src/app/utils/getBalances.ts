@@ -7,10 +7,10 @@ async function getBalances(
   address: string,
   addresses: string[],
   tokens: string[]
-): Promise<AddressBalanceMap> {
+) {
   const balances = await contract(network, address).balances(addresses, tokens);
 
-  return formatAddressBalances(balances, addresses, tokens);
+  return balances;
 }
 
 export default getBalances;
