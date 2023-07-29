@@ -6,7 +6,11 @@ import getBalances from './utils/getBalances';
 import { ethers } from 'ethers';
 import { provider } from './utils/providers';
 import Erc20ABI from './abis/Erc20.abi.json';
-import { getAssets, getContractAddressAndRpcUrl } from './utils/common';
+import {
+  formatAddressBalances,
+  getAssets,
+  getContractAddressAndRpcUrl,
+} from './utils/common';
 import { CSVLink } from 'react-csv';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTwitter, faGithub } from '@fortawesome/free-brands-svg-icons';
@@ -27,12 +31,14 @@ const Balance = () => {
 
       const { contractAddress, rpcUrl } = getContractAddressAndRpcUrl(network);
 
-      const balances = await getBalances(
+      const rawBalances = await getBalances(
         rpcUrl,
         contractAddress,
         addresses,
         assets
       );
+
+      const balances = formatAddressBalances(rawBalances, addresses, assets);
 
       // Get asset names
       const assetNames = await Promise.all(
