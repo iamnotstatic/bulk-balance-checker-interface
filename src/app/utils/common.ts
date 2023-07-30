@@ -33,6 +33,39 @@ export const BSC_RPC_URL =
 export const POLYGON_RPC_URL = 'https://rpc-mainnet.maticvigil.com';
 export const ARBITRUM_RPC_URL = 'https://arb1.arbitrum.io/rpc';
 
+export const NETWORK_CONFIGS: {
+  [network: string]: {
+    contractAddress: string;
+    rpcUrl: string;
+  };
+} = {
+  eth: {
+    contractAddress: ETH_CONTRACT_ADDRESS,
+    rpcUrl: ETH_RPC_URL,
+  },
+  bsc: {
+    contractAddress: BSC_CONTRACT_ADDRESS,
+    rpcUrl: BSC_RPC_URL,
+  },
+  polygon: {
+    contractAddress: POLYGON_CONTRACT_ADDRESS,
+    rpcUrl: POLYGON_RPC_URL,
+  },
+  arbitrum: {
+    contractAddress: ARBITRUM_CONTRACT_ADDRESS,
+    rpcUrl: ARBITRUM_RPC_URL,
+  },
+};
+
+const networkToAssets: {
+  [network: string]: Array<{ symbol: string; decimals: number }>;
+} = {
+  eth: ethDefaultAssets,
+  bsc: bscDefaultAssets,
+  polygon: polygonDefaultAssets,
+  arbitrum: arbitrumDefaultAssets,
+};
+
 export function formatAddressBalances<T extends { toString: () => string }>(
   values: T[],
   addresses: string[],
@@ -69,59 +102,25 @@ export function getAddressBalances<T extends { toString: () => string }>(
 }
 
 export const getAssets = (network: string) => {
-  if (network === 'eth') {
-    return ethDefaultAssets;
-  } else if (network === 'bsc') {
-    return bscDefaultAssets;
-  } else if (network === 'polygon') {
-    return polygonDefaultAssets;
-  } else if (network === 'arbitrum') {
-    return arbitrumDefaultAssets;
-  } else {
-    return [];
-  }
+  return networkToAssets[network];
 };
 
 export const getAsset = (network: string, symbol: string) => {
-  if (network === 'eth') {
-    return ethDefaultAssets.find((asset) => asset.symbol === symbol);
-  } else if (network === 'bsc') {
-    return bscDefaultAssets.find((asset) => asset.symbol === symbol);
-  } else if (network === 'polygon') {
-    return polygonDefaultAssets.find((asset) => asset.symbol === symbol);
-  } else if (network === 'arbitrum') {
-    return arbitrumDefaultAssets.find((asset) => asset.symbol === symbol);
-  } else {
+  const assets = networkToAssets[network];
+
+  if (!assets) {
     return null;
   }
+
+  return assets.find((asset) => asset.symbol === symbol);
 };
 
-export const getContractAddressAndRpcUrl = (network: string) => {
-  switch (network) {
-    case 'eth':
-      return {
-        contractAddress: ETH_CONTRACT_ADDRESS,
-        rpcUrl: ETH_RPC_URL,
-      };
-    case 'bsc':
-      return {
-        contractAddress: BSC_CONTRACT_ADDRESS,
-        rpcUrl: BSC_RPC_URL,
-      };
-    case 'polygon':
-      return {
-        contractAddress: POLYGON_CONTRACT_ADDRESS,
-        rpcUrl: POLYGON_RPC_URL,
-      };
-    case 'arbitrum':
-      return {
-        contractAddress: ARBITRUM_CONTRACT_ADDRESS,
-        rpcUrl: ARBITRUM_RPC_URL,
-      };
-    default:
-      return {
-        contractAddress: ETH_CONTRACT_ADDRESS,
-        rpcUrl: ETH_RPC_URL,
-      };
+export const getContractAddressAndRpcUrl = (network = 'eth') => {
+  const config = NETWORK_CONFIGS[network];
+
+  if (!config) {
+    return NETWORK_CONFIGS['eth'];
   }
+
+  return config;
 };
