@@ -2,22 +2,11 @@ import { NextResponse } from 'next/server';
 
 import getBalances from '../../utils/getBalances';
 import {
+  NETWORKS,
   getAddressBalances,
   getAssets,
   getContractAddressAndRpcUrl,
 } from '../../utils/common';
-
-export const NETWORKS: {
-  [key: string]: {
-    asset: string;
-  };
-} = {
-  eth: { asset: 'ETH' },
-  ethereum: { asset: 'ETH' },
-  bsc: { asset: 'BNB' },
-  polygon: { asset: 'MATIC' },
-  arbitrum: { asset: 'ARB' },
-};
 
 export async function GET() {
   return NextResponse.json({ message: 'App is running!' });
@@ -26,11 +15,9 @@ export async function GET() {
 export async function POST(request: Request) {
   const body = await request.json();
 
-  // Network validation and determination of native asset
   const network = body.network.toLowerCase();
   const networkInfo = NETWORKS[network];
 
-  // If networkInfo is undefined, then it's an invalid network
   if (!networkInfo) {
     return NextResponse.json({
       message: 'Invalid network!',

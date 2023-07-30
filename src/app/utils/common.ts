@@ -56,9 +56,25 @@ export const NETWORK_CONFIGS: {
     rpcUrl: ARBITRUM_RPC_URL,
   },
 };
+export const NETWORKS: {
+  [key: string]: {
+    asset: string;
+  };
+} = {
+  eth: { asset: 'ETH' },
+  ethereum: { asset: 'ETH' },
+  bsc: { asset: 'BNB' },
+  polygon: { asset: 'MATIC' },
+  arbitrum: { asset: 'ARB' },
+};
 
 const networkToAssets: {
-  [network: string]: Array<{ symbol: string; decimals: number }>;
+  [network: string]: Array<{
+    address: string;
+    symbol: string;
+    logo: string;
+    decimals: number;
+  }>;
 } = {
   eth: ethDefaultAssets,
   bsc: bscDefaultAssets,
@@ -102,7 +118,13 @@ export function getAddressBalances<T extends { toString: () => string }>(
 }
 
 export const getAssets = (network: string) => {
-  return networkToAssets[network];
+  const assets = networkToAssets[network];
+
+  if (!assets) {
+    return [];
+  }
+
+  return assets;
 };
 
 export const getAsset = (network: string, symbol: string) => {
