@@ -28,8 +28,7 @@ export const ARBITRUM_CONTRACT_ADDRESS =
   '0x151E24A486D7258dd7C33Fb67E4bB01919B7B32c';
 
 export const ETH_RPC_URL = 'https://eth.llamarpc.com';
-export const BSC_RPC_URL =
-  'https://bsc-mainnet.nodereal.io/v1/64a9df0874fb4a93b9d0a3849de012d3';
+export const BSC_RPC_URL = 'https://bsc.blockpi.network/v1/rpc/public';
 export const POLYGON_RPC_URL = 'https://rpc-mainnet.maticvigil.com';
 export const ARBITRUM_RPC_URL = 'https://arb1.arbitrum.io/rpc';
 
