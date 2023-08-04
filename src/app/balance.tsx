@@ -23,6 +23,7 @@ const Balance = () => {
   const [balances, setBalances] = useState<any>({});
   const [loading, setLoading] = useState<boolean>(false);
   const [isActiveIndexes, setIsActiveIndexes] = useState<number[]>([]);
+  const [limit, setLimit] = useState<number>(100);
 
   const handleOnSubmit = async (e: any) => {
     try {
@@ -94,6 +95,10 @@ const Balance = () => {
     setNetwork(network);
   };
 
+  const loadMore = () => {
+    setLimit(limit + 100);
+  };
+
   return (
     <>
       <div>
@@ -107,6 +112,7 @@ const Balance = () => {
             href="https://twitter.com/iamnotstatic"
             target="_blank"
             className="mr-5 hover:text-blue-500"
+            rel="noreferrer"
           >
             <FontAwesomeIcon icon={faTwitter} size="2x" />
           </a>
@@ -114,6 +120,7 @@ const Balance = () => {
             href="https://github.com/iamnotstatic/bulk-balance-checker-interface"
             target="_blank"
             className="hover:text-blue-500"
+            rel="noreferrer"
           >
             <FontAwesomeIcon icon={faGithub} size="2x" />
           </a>
@@ -179,7 +186,14 @@ const Balance = () => {
             className="appearance-none border rounded w-full px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-3 py-4"
             rows={3}
             onChange={(e) =>
-              onSetAssets(e.target.value.replace(/\s+/g, ' ').trim().split(' '))
+              onSetAssets(
+                e.target.value
+                  .replace(/\s+/g, ' ')
+                  .replace(/[.,]/g, '')
+                  .replace(/[",]/g, '')
+                  .trim()
+                  .split(' ')
+              )
             }
             placeholder="Token addresses 0x1234... 0x5678..."
             name="assets"
@@ -191,7 +205,12 @@ const Balance = () => {
             rows={8}
             onChange={(e) =>
               onSetAddresses(
-                e.target.value.replace(/\s+/g, ' ').trim().split(' ')
+                e.target.value
+                  .replace(/\s+/g, ' ')
+                  .replace(/[.,]/g, '')
+                  .replace(/[",]/g, '')
+                  .trim()
+                  .split(' ')
               )
             }
             placeholder="Addresses 0x1234... 0x5678..."
@@ -219,12 +238,13 @@ const Balance = () => {
         assets.length > 0 && (
           <div className="bg-gray-100 p-6 mt-3 w-full text-center">
             <h1 className="text-xl font-extralight text-center mb-3">
-              Results
+              Results ({addresses.length} addresses)
             </h1>
             <CSVLink
               data={[
-                ['Address', ...assetNames],
-                ...Object.keys(balances).map((address) => [
+                ['S/N', 'Address', ...assetNames],
+                ...Object.keys(balances).map((address, index) => [
+                  index + 1,
                   address,
                   ...assets.map((asset) =>
                     parseFloat(
@@ -240,7 +260,7 @@ const Balance = () => {
                   ),
                 ]),
               ]}
-              filename={'balances.csv'}
+              filename={`balances(${addresses.length}).csv`}
               className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-6 rounded focus:outline-none focus:shadow-outline mt-2 mb-5 cursor-pointer float-right"
             >
               Export CSV
@@ -248,6 +268,7 @@ const Balance = () => {
             <table className="table-fixed w-full">
               <thead>
                 <tr>
+                  <th className="px-4 py-2">#</th>
                   <th className="px-4 py-2">Address</th>
                   {assetNames.map((asset, i) => (
                     <th className="px-4 py-2" key={i}>
@@ -257,27 +278,39 @@ const Balance = () => {
                 </tr>
               </thead>
               <tbody>
-                {Object.keys(balances).map((address, i) => (
-                  <tr key={i}>
-                    <td className="border px-4 py-2">
-                      {address.slice(0, 6)} ... {address.slice(-5)}
-                    </td>
-                    {assets.map((asset, i) => (
-                      <td className="border px-4 py-2" key={i}>
-                        {parseFloat(
-                          ethers?.formatUnits(
-                            balances[address][asset],
-                            parseFloat(
-                              assetNames[i]?.split('(')[1]?.split(')')[0]
-                            )
-                          )
-                        ).toLocaleString('en-US')}
+                {Object.keys(balances)
+                  .slice(0, limit)
+                  .map((address, i) => (
+                    <tr key={i}>
+                      <td className="border px-4 py-2">{i + 1}</td>
+                      <td className="border px-4 py-2">
+                        {address.slice(0, 5)} ... {address.slice(-4)}
                       </td>
-                    ))}
-                  </tr>
-                ))}
+                      {assets.map((asset, i) => (
+                        <td className="border px-4 py-2" key={i}>
+                          {parseFloat(
+                            ethers?.formatUnits(
+                              balances[address][asset],
+                              parseFloat(
+                                assetNames[i]?.split('(')[1]?.split(')')[0]
+                              )
+                            )
+                          ).toLocaleString('en-US')}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
               </tbody>
             </table>
+            {Object.keys(balances).length > limit && (
+              <button
+                type="button"
+                className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-6 rounded focus:outline-none focus:shadow-outline mt-2 mb-5 cursor-pointer"
+                onClick={loadMore}
+              >
+                Load more
+              </button>
+            )}
           </div>
         )}
     </>
