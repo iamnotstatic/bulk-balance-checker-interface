@@ -1,6 +1,4 @@
-import { AddressBalanceMap } from 'eth-balance-checker';
 import { contract } from './providers';
-import { formatAddressBalances } from './common';
 
 async function getBalances(
   network: string,
