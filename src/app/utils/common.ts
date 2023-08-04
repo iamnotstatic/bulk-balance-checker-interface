@@ -27,10 +27,10 @@ export const POLYGON_CONTRACT_ADDRESS =
 export const ARBITRUM_CONTRACT_ADDRESS =
   '0x151E24A486D7258dd7C33Fb67E4bB01919B7B32c';
 
-export const ETH_RPC_URL = 'https://eth.llamarpc.com';
-export const BSC_RPC_URL = 'https://bsc.blockpi.network/v1/rpc/public';
-export const POLYGON_RPC_URL = 'https://rpc-mainnet.maticvigil.com';
-export const ARBITRUM_RPC_URL = 'https://arb1.arbitrum.io/rpc';
+export const ETH_RPC_URL: string = process.env.ETH_RPC_URL || '';
+export const BSC_RPC_URL: string = process.env.BSC_RPC_URL || '';
+export const POLYGON_RPC_URL: string = process.env.POLYGON_RPC_URL || '';
+export const ARBITRUM_RPC_URL: string = process.env.ARBITRUM_RPC_URL || '';
 
 export const NETWORK_CONFIGS: {
   [network: string]: {
