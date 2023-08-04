@@ -55,6 +55,7 @@ const Balance = () => {
               ? 'ARB (18)'
               : '';
 
+          // TODO: Switch this to work with the assets symbol instead of the contract address
           const token = new ethers.Contract(asset, Erc20ABI, provider(rpcUrl));
 
           const symbol =
