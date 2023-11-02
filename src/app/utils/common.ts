@@ -27,10 +27,12 @@ export const POLYGON_CONTRACT_ADDRESS =
 export const ARBITRUM_CONTRACT_ADDRESS =
   '0x151E24A486D7258dd7C33Fb67E4bB01919B7B32c';
 
-export const ETH_RPC_URL: string = process.env.ETH_RPC_URL || '';
-export const BSC_RPC_URL: string = process.env.BSC_RPC_URL || '';
-export const POLYGON_RPC_URL: string = process.env.POLYGON_RPC_URL || '';
-export const ARBITRUM_RPC_URL: string = process.env.ARBITRUM_RPC_URL || '';
+export const ETH_RPC_URL: string = process.env.NEXT_PUBLIC_ETH_RPC_URL || '';
+export const BSC_RPC_URL: string = process.env.NEXT_PUBLIC_BSC_RPC_URL || '';
+export const POLYGON_RPC_URL: string =
+  process.env.NEXT_PUBLIC_POLYGON_RPC_URL || '';
+export const ARBITRUM_RPC_URL: string =
+  process.env.NEXT_PUBLIC_ARBITRUM_RPC_URL || '';
 
 export const NETWORK_CONFIGS: {
   [network: string]: {
@@ -39,6 +41,10 @@ export const NETWORK_CONFIGS: {
   };
 } = {
   eth: {
+    contractAddress: ETH_CONTRACT_ADDRESS,
+    rpcUrl: ETH_RPC_URL,
+  },
+  ethereum: {
     contractAddress: ETH_CONTRACT_ADDRESS,
     rpcUrl: ETH_RPC_URL,
   },
@@ -110,7 +116,7 @@ export function getAddressBalances<T extends { toString: () => string }>(
         values[addrIdx * assets.length + assetIdx].toString(),
         asset.decimals
       );
-      balances[addr][asset.symbol] = balance.toString();
+      balances[addr][`${asset.symbol}(${asset.decimals})`] = balance.toString();
     });
   });
   return balances;
