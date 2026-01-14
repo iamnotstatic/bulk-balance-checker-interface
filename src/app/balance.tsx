@@ -10,6 +10,7 @@ import {
   formatAddressBalances,
   getAssets,
   getContractAddressAndRpcUrl,
+  NETWORKS,
 } from './utils/common';
 import { CSVLink } from 'react-csv';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -41,28 +42,23 @@ const Balance = () => {
 
       const balances = formatAddressBalances(rawBalances, addresses, assets);
 
-      // Get asset names
+      const rpcProvider = provider(rpcUrl);
       const assetNames = await Promise.all(
         assets.map(async (asset) => {
-          if (asset === ethers.ZeroAddress)
-            return network === 'eth'
-              ? 'ETH (18)'
-              : network === 'bsc'
-              ? 'BNB (18)'
-              : network === 'polygon'
-              ? 'MATIC (18)'
-              : network === 'arbitrum'
-              ? 'ARB (18)'
-              : '';
+          if (asset === ethers.ZeroAddress) {
+            return `${NETWORKS[network].asset} (18)`;
+          }
 
-          // TODO: Switch this to work with the assets symbol instead of the contract address
-          const token = new ethers.Contract(asset, Erc20ABI, provider(rpcUrl));
-
-          const symbol =
-            (await token.symbol()) || (await await token._symbol());
-          const decimals = await token.decimals();
-
-          return `${symbol} (${decimals})`;
+          try {
+            const token = new ethers.Contract(asset, Erc20ABI, rpcProvider);
+            const [symbol, decimals] = await Promise.all([
+              token.symbol().catch(() => token._symbol().catch(() => 'UNKNOWN')),
+              token.decimals().catch(() => 18),
+            ]);
+            return `${symbol} (${decimals})`;
+          } catch {
+            return 'UNKNOWN (18)';
+          }
         })
       );
 
