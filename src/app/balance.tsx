@@ -13,6 +13,9 @@ import {
   NETWORKS,
 } from './utils/common';
 import { CSVLink } from 'react-csv';
+
+// Fix for react-csv type compatibility with React 18
+const CSVLinkComponent = CSVLink as React.ComponentType<any>;
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTwitter, faGithub } from '@fortawesome/free-brands-svg-icons';
 
@@ -237,7 +240,7 @@ const Balance = () => {
             <h1 className="text-xl font-extralight text-center mb-3">
               Results ({addresses.length} addresses)
             </h1>
-            <CSVLink
+            <CSVLinkComponent
               data={[
                 ['S/N', 'Address', ...assetNames],
                 ...Object.keys(balances).map((address, index) => [
@@ -261,7 +264,7 @@ const Balance = () => {
               className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-6 rounded focus:outline-none focus:shadow-outline mt-2 mb-5 cursor-pointer float-right"
             >
               Export CSV
-            </CSVLink>
+            </CSVLinkComponent>
             <table className="table-fixed w-full">
               <thead>
                 <tr>
