@@ -1,34 +1,103 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Bulk Balance Checker
+
+A web-based tool to check the balances of multiple wallet addresses across multiple ERC-20 tokens simultaneously. Supports Ethereum, BNB Smart Chain, Polygon, and Arbitrum networks.
+
+## Features
+
+- **Multi-Network Support**: Ethereum, BNB Smart Chain, Polygon, Arbitrum
+- **Bulk Queries**: Check hundreds of addresses at once
+- **Multiple Tokens**: Query native assets and ERC-20 tokens in a single request
+- **Quick-Select Assets**: Pre-configured buttons for popular tokens (ETH, USDT, USDC, DAI, etc.)
+- **CSV Export**: Download results for further analysis
+- **Interactive Table**: Paginated results with load more functionality
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+
+- npm
+
+### Installation
+
+```bash
+npm install
+```
+
+### Environment Variables
+
+Create a `.env.local` file with your RPC URLs:
+
+```env
+NEXT_PUBLIC_ETH_RPC_URL=https://ethereum-rpc.publicnode.com
+NEXT_PUBLIC_BSC_RPC_URL=https://bsc-rpc.publicnode.com
+NEXT_PUBLIC_POLYGON_RPC_URL=https://polygon-bor-rpc.publicnode.com
+NEXT_PUBLIC_ARBITRUM_RPC_URL=https://arbitrum-one-rpc.publicnode.com
+```
+
+### Development
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to use the app.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Build
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+```bash
+npm run build
+```
 
-## Learn More
+### Testing
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm test
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## API
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+### `POST /api/check`
 
-## Deploy on Vercel
+Check balances for multiple addresses and tokens.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**Request Body:**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+```json
+{
+  "network": "eth",
+  "addresses": ["0x123...", "0x456..."],
+  "assets": ["0x0000000000000000000000000000000000000000", "0xdAC17F958D2ee523a2206206994597C13D831ec7"]
+}
+```
+
+- `network`: One of `eth`, `bsc`, `polygon`, `arbitrum`
+- `addresses`: Array of wallet addresses
+- `assets`: Array of token addresses (use `0x0000...0000` for native token)
+
+**Response:**
+
+```json
+{
+  "message": "Balances fetched!",
+  "data": {
+    "0x123...": {
+      "ETH(18)": "1.5",
+      "USDT(6)": "1000.0"
+    }
+  }
+}
+```
+
+**Note:** Large requests (~3000+ total queries) may fail due to RPC limits. Reduce the number of addresses or assets if this happens.
+
+## Tech Stack
+
+- [Next.js](https://nextjs.org/) - React framework
+- [ethers.js](https://docs.ethers.org/) - Ethereum library
+- [Tailwind CSS](https://tailwindcss.com/) - Styling
+- [Jest](https://jestjs.io/) - Testing
+
+## License
+
+MIT
