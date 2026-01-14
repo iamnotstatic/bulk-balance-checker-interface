@@ -10,8 +10,12 @@ import {
   formatAddressBalances,
   getAssets,
   getContractAddressAndRpcUrl,
+  NETWORKS,
 } from './utils/common';
 import { CSVLink } from 'react-csv';
+
+// Fix for react-csv type compatibility with React 18
+const CSVLinkComponent = CSVLink as React.ComponentType<any>;
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTwitter, faGithub } from '@fortawesome/free-brands-svg-icons';
 
@@ -41,28 +45,23 @@ const Balance = () => {
 
       const balances = formatAddressBalances(rawBalances, addresses, assets);
 
-      // Get asset names
+      const rpcProvider = provider(rpcUrl);
       const assetNames = await Promise.all(
         assets.map(async (asset) => {
-          if (asset === ethers.ZeroAddress)
-            return network === 'eth'
-              ? 'ETH (18)'
-              : network === 'bsc'
-              ? 'BNB (18)'
-              : network === 'polygon'
-              ? 'MATIC (18)'
-              : network === 'arbitrum'
-              ? 'ARB (18)'
-              : '';
+          if (asset === ethers.ZeroAddress) {
+            return `${NETWORKS[network].asset} (18)`;
+          }
 
-          // TODO: Switch this to work with the assets symbol instead of the contract address
-          const token = new ethers.Contract(asset, Erc20ABI, provider(rpcUrl));
-
-          const symbol =
-            (await token.symbol()) || (await await token._symbol());
-          const decimals = await token.decimals();
-
-          return `${symbol} (${decimals})`;
+          try {
+            const token = new ethers.Contract(asset, Erc20ABI, rpcProvider);
+            const [symbol, decimals] = await Promise.all([
+              token.symbol().catch(() => token._symbol().catch(() => 'UNKNOWN')),
+              token.decimals().catch(() => 18),
+            ]);
+            return `${symbol} (${decimals})`;
+          } catch {
+            return 'UNKNOWN (18)';
+          }
         })
       );
 
@@ -241,7 +240,7 @@ const Balance = () => {
             <h1 className="text-xl font-extralight text-center mb-3">
               Results ({addresses.length} addresses)
             </h1>
-            <CSVLink
+            <CSVLinkComponent
               data={[
                 ['S/N', 'Address', ...assetNames],
                 ...Object.keys(balances).map((address, index) => [
@@ -265,7 +264,7 @@ const Balance = () => {
               className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-6 rounded focus:outline-none focus:shadow-outline mt-2 mb-5 cursor-pointer float-right"
             >
               Export CSV
-            </CSVLink>
+            </CSVLinkComponent>
             <table className="table-fixed w-full">
               <thead>
                 <tr>
